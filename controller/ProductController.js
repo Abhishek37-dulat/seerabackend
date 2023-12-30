@@ -90,7 +90,7 @@ const getSingleProduct = async (req, res) => {
   }
 };
 const addProduct = async (req, res) => {
-  //   console.log(req.body);
+  console.log(req.body);
   const {
     product_name,
     product_availability,
@@ -134,7 +134,7 @@ const addProduct = async (req, res) => {
     const pImages = [];
     if (product_image.length > 0) {
       for (let x = 0; x < product_image.length; x++) {
-        let up = await cloudinary.uploader.upload(product_image[x], {
+        let up = await cloudinary.uploader.upload(product_image[x]?.image, {
           upload_preset: "seeraprint",
         });
         pImages.push(up);
@@ -147,24 +147,32 @@ const addProduct = async (req, res) => {
         if (product_colors[x]?.image?.length > 0) {
           for (let y = 0; y < product_colors[x]?.image?.length; y++) {
             let up = await cloudinary.uploader.upload(
-              product_colors[x].image[y],
+              product_colors[x].image[y]?.image,
               {
                 upload_preset: "seeraprint",
               }
             );
             tempimage.push(up);
           }
-          const bImage = await cloudinary.uploader.upload(
-            product_colors[x].image_before_logo,
-            {
-              upload_preset: "seeraprint",
-            }
-          );
-          cImage.push({
-            ...product_colors[x],
-            image: tempimage,
-            image_before_logo: bImage,
-          });
+          if (product_colors[x].image_before_logo !== null) {
+            const bImage = await cloudinary.uploader.upload(
+              product_colors[x].image_before_logo?.image,
+              {
+                upload_preset: "seeraprint",
+              }
+            );
+            cImage.push({
+              ...product_colors[x],
+              image: tempimage,
+              image_before_logo: bImage,
+            });
+          } else {
+            cImage.push({
+              ...product_colors[x],
+              image: tempimage,
+              image_before_logo: null,
+            });
+          }
         } else {
           cImage.push(product_colors[x]);
         }
@@ -203,7 +211,7 @@ const addProduct = async (req, res) => {
       data: productdata,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({
       msg: "Error while adding product details",
       error: error.message,

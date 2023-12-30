@@ -75,14 +75,21 @@ const ProductSchema = new mongoose.Schema(
     ],
     product_shapes: [
       {
-        shapes: [{ type: String }],
+        shapes: { type: String },
         sizes: [{ type: String }],
       },
     ],
     product_categories: [
       {
-        type: String,
-        required: true,
+        mainCategorie: {
+          type: String,
+          required: true,
+        },
+        subCategorie: [
+          {
+            type: String,
+          },
+        ],
       },
     ],
     product_gender: {
